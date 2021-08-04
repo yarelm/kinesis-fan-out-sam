@@ -105,6 +105,9 @@ Resources:
   
   DDBRecords:
     Type: AWS::Serverless::SimpleTable
+    
+  DDBRecords2:
+    Type: AWS::Serverless::SimpleTable
 
   S3Records:
     Type: AWS::S3::Bucket
