@@ -16,9 +16,9 @@ Metadata:
       - Lambda
       - Serverless
       - Node
-    HomePageUrl: https://github.com/singledigit/kinesis-fan-out-sam
+    HomePageUrl: https://github.com/yarelm/kinesis-fan-out-sam
     SemanticVersion: 0.0.4
-    SourceCodeUrl: https://github.com/singledigit/kinesis-fan-out-sam/releases/tag/v0.0.4
+    SourceCodeUrl: https://github.com/yarelm/kinesis-fan-out-sam/releases/tag/v0.0.4
 
 Globals:
   Function:
@@ -45,6 +45,23 @@ Resources:
             Stream: !GetAtt DDBConsumer.ConsumerARN
             StartingPosition: LATEST
             BatchSize: 100
+            
+  DDBFunction2:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ddb/
+      Policies:
+        - DynamoDBCrudPolicy: {TableName: !Ref DDBRecords2}
+      Environment:
+        Variables:
+          TABLE: !Ref DDBRecords2
+      Events:
+        Stream:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt DDBConsumer2.ConsumerARN
+            StartingPosition: LATEST
+            BatchSize: 100          
   
   S3Function:
     Type: AWS::Serverless::Function
@@ -73,6 +90,12 @@ Resources:
     Properties:
       StreamARN: !GetAtt KinesisStream.Arn
       ConsumerName: DDBConsumer
+      
+  DDBConsumer2:
+    Type: "AWS::Kinesis::StreamConsumer"
+    Properties:
+      StreamARN: !GetAtt KinesisStream.Arn
+      ConsumerName: DDBConsumer2    
 
   S3Consumer:
     Type: "AWS::Kinesis::StreamConsumer"
